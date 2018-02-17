@@ -1,0 +1,6 @@
+*.DS_Store
+*__pycache__
+vk_jsons
+photos
+html_result
+nsfw_scores

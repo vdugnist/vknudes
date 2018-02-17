@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+</head>
+<body>
+
+	<ul>
+		{% for photo in photos %}
+			<li>
+				<p>{{ photo.name }} , {{ photo.likes_count }} likes, score: {{ photo.score }}</p>
+				<img src={{ photo.img_url }} height=500>
+			</li>
+		{% endfor %}
+	</ul>
+
+</body>
+</html>
