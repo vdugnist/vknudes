@@ -8,7 +8,8 @@ def download_photos(photos_file, folder_name):
 	photos = json.load(open(photos_file))
 
 	for girl in photos:
-		girl_folder = folder_name + '/' + girl['domain']
+		girl_nickname = girl['domain'] if 'domain' in girl else str(girl['id'])
+		girl_folder = folder_name + '/' + girl_nickname
 		os.makedirs(girl_folder, exist_ok=True)
 
 		for photo in girl['photos']:

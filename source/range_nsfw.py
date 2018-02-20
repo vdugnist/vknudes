@@ -19,7 +19,7 @@ def range_nsfw_folder_and_merge_with_json(folder, json_path):
     user_json = json.load(open(json_path))
 
     for score in scores:
-        user = list(filter(lambda json_user: json_user['domain'] == score['user_id'],  user_json))[0]
+        user = list(filter(lambda json_user: (json_user['domain'] if 'domain' in json_user else str(json_user['id'])) == score['user_id'],  user_json))[0]
         photo = list(filter(lambda photo: photo['id'] == score['photo_id'], user['photos']))[0]
         score['img_url'] = photo['url_big']  if 'url_big' in photo else photo['url_small']
         score['name'] = user['first_name'] + ' ' + user['last_name']
