@@ -15,6 +15,9 @@ def get_user_screen_name(access_token):
 		print(res_json)
 		sys.exit(1)
 
+	if 'screen_name' not in res_json['response']:
+		return res_json['response']['first_name'] + '_' + res_json['response']['last_name']
+
 	return res_json['response']['screen_name']
 
 if __name__ == '__main__':
