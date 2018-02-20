@@ -10,7 +10,7 @@ vk_api_version = '5.71'
 top_liked_count = 100
 vk_api_sleep_delay = 0.33
 
-def get_gf_photos_and_save_to_folder(access_token, folder, screen_name, should_reload=False):
+def get_gf_photos_and_save_to_folder(access_token, folder, screen_name, should_reload=False, with_followers=False):
 	os.makedirs(folder, exist_ok=True)
 
 	filename = folder + '/' + screen_name + '.json'
@@ -18,7 +18,7 @@ def get_gf_photos_and_save_to_folder(access_token, folder, screen_name, should_r
 	if os.path.isfile(filename) and not should_reload:
 		return filename
 
-	result = get_gf_photos_json(access_token)
+	result = get_gf_photos_json(access_token, with_followers)
 
 	f = open(filename, 'w')
 	f.write(result)
@@ -26,17 +26,17 @@ def get_gf_photos_and_save_to_folder(access_token, folder, screen_name, should_r
 
 	return filename
 
-def get_gf_photos_json(access_token):
-	photos_list = append_gf_photos_to_photos_list(access_token, get_gf_list(access_token))
+def get_gf_photos_json(access_token, with_followers):
+	photos_list = append_gf_photos_to_photos_list(access_token, get_gf_list(access_token, with_followers))
 	return json.dumps(photos_list)
 
 
-def get_gf_list(access_token):
+def get_gf_list(access_token, with_followers):
 	default_parameters = {'v' : vk_api_version, 'access_token' : access_token}
 	request_parameters = {'fields' : 'sex,domain'}
 	parameters = {**request_parameters, **default_parameters}
-	url = 'https://api.vk.com/method/friends.get?' + urllib.parse.urlencode(parameters)
 	
+	url = 'https://api.vk.com/method/friends.get?' + urllib.parse.urlencode(parameters)
 	res_body = urllib.request.urlopen(url).read()
 	friends_list = json.loads(res_body.decode("utf-8"))
 
@@ -45,6 +45,16 @@ def get_gf_list(access_token):
 	for friend in friends_list['response']['items']:
 		if friend['sex'] == 1 and 'deactivated' not in friend:
 			gf_list.append(friend)
+
+	if with_followers:
+		request_parameters = {'fields' : 'sex,domain,screen_name'}
+		url = 'https://api.vk.com/method/users.getFollowers?' + urllib.parse.urlencode(parameters)
+		res_body = urllib.request.urlopen(url).read()
+		friends_list = json.loads(res_body.decode("utf-8"))
+
+		for friend in friends_list['response']['items']:
+			if friend['sex'] == 1 and 'deactivated' not in friend:
+				gf_list.append(friend)
 
 	return gf_list
 
